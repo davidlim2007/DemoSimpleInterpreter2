@@ -548,7 +548,7 @@ void ADDITION_handler(int token)
 		return;
 	}
 
-	// Get the next token and make sure it is either an IDENTIFIER or a literal INTEGER value.
+	// Get the next token and make sure it is either an IDENTIFIER, a literal INTEGER value, or a literal DOUBLE value.
 	token = yylex();
 	if (token == IDENTIFIER)
 	{
@@ -650,7 +650,7 @@ void SUBTRACTION_handler(int token)
 		return;
 	}
 
-	// Get the next token and make sure it is either an IDENTIFIER or a literal INTEGER value.
+	// Get the next token and make sure it is either an IDENTIFIER, a literal INTEGER value, or a literal DOUBLE value.
 	token = yylex();
 	if (token == IDENTIFIER)
 	{
@@ -752,7 +752,7 @@ void MULTIPLICATION_handler(int token)
 		return;
 	}
 
-	// Get the next token and make sure it is either an IDENTIFIER or a literal INTEGER value.
+	// Get the next token and make sure it is either an IDENTIFIER, a literal INTEGER value, or a literal DOUBLE value.
 	token = yylex();
 	if (token == IDENTIFIER)
 	{
@@ -839,6 +839,7 @@ void DIVISION_handler(int token)
 	}
 	else
 	{
+		// Check if the IDENTIFIER has a value of 0. If so, we cannot perform DIVISION.
 		if (
 			((*theIterator).token_value.tvalType == INTEGER) && ((*theIterator).token_value.tval.intval == 0)
 												||
@@ -865,7 +866,7 @@ void DIVISION_handler(int token)
 		return;
 	}
 
-	// Get the next token and make sure it is either an IDENTIFIER or a literal INTEGER value.
+	// Get the next token and make sure it is either an IDENTIFIER, a literal INTEGER value, or a literal DOUBLE value.
 	token = yylex();
 	if (token == IDENTIFIER)
 	{
@@ -889,6 +890,7 @@ void DIVISION_handler(int token)
 
 			(*theIterator).displayValue();
 
+			// Check if the IDENTIFIER has a value of 0. If so, we cannot perform DIVISION.
 			if (
 				((*theIterator).token_value.tvalType == INTEGER) && ((*theIterator).token_value.tval.intval == 0)
 													||
