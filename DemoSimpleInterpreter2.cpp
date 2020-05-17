@@ -344,6 +344,10 @@ public:
 		{
 			return (this->token_value.tval.dblval == nv.token_value.tval.dblval);
 		}
+		else if (this->token_value.tvalType == STRING)
+		{
+			return (strcmp(this->token_value.tval.pstrval, nv.token_value.tval.pstrval) == 0);
+		}
 		else
 		{
 
@@ -419,6 +423,9 @@ void SET_handler(int token)
 {
 	NameValue nameValue;
 
+	// Retrieve the next token from the input via yylex().
+	// If the token is not an IDENTIFIER, display an error message
+	// and skip all remaining tokens in the line.
 	token = yylex();
 	if (token != IDENTIFIER)
 	{
@@ -427,8 +434,12 @@ void SET_handler(int token)
 		return;
 	}
 
+	// Get the name of the IDENTIFIER (id1).
 	nameValue.strName = yytext;
 
+	// Check the next token. 
+	// It must be the ASSIGN token (the '=' symbol). 
+	// If not, an error message is displayed and the rest of the line is skipped.
 	token = yylex();
 	if (token != ASSIGN)
 	{
@@ -437,7 +448,14 @@ void SET_handler(int token)
 		return;
 	}
 
+	// If the ASSIGN token is detected, the follow up token is examined and 
+	// tested to check that it is either an IDENTIFIER, an INTEGER, a DOUBLE,
+	// or a STRING.
 	token = yylex();
+
+	// If the next token is an IDENTIFIER (id2), GetNameValue() is called to 
+	// obtain the value of the variable associated with the name of id2.
+	// This value is then assigned to id1.
 	if (token == IDENTIFIER)
 	{
 		// Get the NameValue associated with the next IDENTIFIER.
@@ -459,18 +477,25 @@ void SET_handler(int token)
 			SetNameValue(nameValue);
 		}
 	}
+	// If the next token is an INTEGER literal, the token value is copied 
+	// from g_token_value to id1.
 	else if (token == INTEGER)
 	{
 		// Do the SET.
 		nameValue.copy_token_value(g_token_value);
 		SetNameValue(nameValue);
 	}
+	// If the next token is a DOUBLE literal, the token value is copied 
+	// from g_token_value to id1.
 	else if (token == DOUBLE)
 	{
 		// Do the SET.
 		nameValue.copy_token_value(g_token_value);
 		SetNameValue(nameValue);
 	}
+	// If the next token is a STRING literal, the token value is copied 
+	// from g_token_value to id1. The string literal value of g_token_value
+	// is also freed.
 	else if (token == STRING)
 	{
 		// Do the SET.
@@ -478,6 +503,8 @@ void SET_handler(int token)
 		SetNameValue(nameValue);
 		free(g_token_value.tval.pstrval);
 	}
+	// If the next token is not an IDENTIFIER, INTEGER, DOUBLE, or STRING,
+	// display an error message and skip the rest of the line.
 	else
 	{
 		printf("Syntax error in Line [%d]. Expecting an IDENTIFIER, INTEGER, or DOUBLE but found [%s]\n", yylineno, yytext);
@@ -490,6 +517,9 @@ void SET_handler(int token)
 
 void GET_handler(int token)
 {
+	// Retrieve the next token from the input via yylex().
+	// If the token is not an IDENTIFIER, display an error message
+	// and skip all remaining tokens in the line. 
 	token = yylex();
 	if (token != IDENTIFIER)
 	{
@@ -500,6 +530,9 @@ void GET_handler(int token)
 
 	std::vector<NameValue>::iterator theIterator = GetNameValue(std::string(yytext));
 
+	// If the relevant NameValue cannot be found,
+	// display an error message and skip the rest of the
+	// line.
 	if (theIterator == vecNVPairs.end())
 	{
 		printf("Identifier [%s] Not Found.\n", yytext);
@@ -513,7 +546,9 @@ void GET_handler(int token)
 
 void ADDITION_handler(int token)
 {
-	// Get the next token and make sure it is an IDENTIFIER.
+	// Retrieve the next token from the input via yylex().
+	// If the token is not an IDENTIFIER, display an error message
+	// and skip all remaining tokens in the line. 
 	token = yylex();
 	if (token != IDENTIFIER)
 	{
@@ -522,9 +557,12 @@ void ADDITION_handler(int token)
 		return;
 	}
 
-	// Get the NameValue associated with IDENTIFIER.
+	// Get the NameValue associated with IDENTIFIER (id1).
 	std::vector<NameValue>::iterator theIterator = GetNameValue(std::string(yytext));
 
+	// If the relevant NameValue cannot be found,
+	// display an error message and skip the rest of the
+	// line.
 	if (theIterator == vecNVPairs.end())
 	{
 		printf("Identifier [%s] Not Found.\n", yytext);
@@ -539,7 +577,8 @@ void ADDITION_handler(int token)
 	// Set nameValue to the discovered NameValue pair found in vecNVPairs.
 	NameValue nameValue = (*theIterator);
 
-	// Get the next token and make sure it is a COMMA.
+	// Check the next token. It must be the COMMA token.
+	// If not, an error message is displayed and the rest of the line is skipped.
 	token = yylex();
 	if (token != COMMA)
 	{
@@ -548,13 +587,20 @@ void ADDITION_handler(int token)
 		return;
 	}
 
-	// Get the next token and make sure it is either an IDENTIFIER, a literal INTEGER value, or a literal DOUBLE value.
+	// Get the next token and make sure it is either an IDENTIFIER, a literal INTEGER value, 
+	// or a literal DOUBLE value.
 	token = yylex();
+
+	// If the next token is an IDENTIFIER (id2), GetNameValue() is called to 
+	// obtain the value of the variable associated with the name of id2.
 	if (token == IDENTIFIER)
 	{
 		// Get the NameValue associated with the next IDENTIFIER.
 		std::vector<NameValue>::iterator theIterator = GetNameValue(std::string(yytext));
 
+		// If the relevant NameValue cannot be found,
+		// display an error message and skip the rest of the
+		// line.
 		if (theIterator == vecNVPairs.end())
 		{
 			printf("Identifier [%s] Not Found.\n", yytext);
@@ -563,6 +609,8 @@ void ADDITION_handler(int token)
 		}
 		else
 		{
+			// If id2 and id1 have incompatible types, we cannot perform ADDITION.
+			// We display an error message and skip the rest of the line.
 			if (nameValue.token_value.tvalType != (*theIterator).token_value.tvalType)
 			{
 				printf("Identifier [%s] and Identifier [%s] have incompatible tvalTypes. Cannot perform ADDITION.\n", nameValue.strName.c_str(), (*theIterator).strName.c_str());
@@ -579,6 +627,10 @@ void ADDITION_handler(int token)
 	}
 	else if (token == INTEGER)
 	{
+		// If the next token is an INTEGER but id1 is not of type INTEGER,
+		// we cannot perform ADDITION.
+		//
+		// We display an error message and skip the rest of the line.
 		if (nameValue.token_value.tvalType != INTEGER)
 		{
 			printf("Identifier [%s] is of type DOUBLE and cannot perform ADDITION on an INTEGER.\n", nameValue.strName.c_str());
@@ -592,6 +644,10 @@ void ADDITION_handler(int token)
 	}
 	else if (token == DOUBLE)
 	{
+		// If the next token is a DOUBLE but id1 is not of type DOUBLE,
+		// we cannot perform ADDITION.
+		//
+		// We display an error message and skip the rest of the line.
 		if (nameValue.token_value.tvalType != DOUBLE)
 		{
 			printf("Identifier [%s] is of type INTEGER and cannot perform ADDITION on an DOUBLE.\n", nameValue.strName.c_str());
@@ -605,6 +661,8 @@ void ADDITION_handler(int token)
 	}
 	else
 	{
+		// If the next token is not an IDENTIFIER, INTEGER, or DOUBLE,
+		// display an error message and skip the rest of the line.
 		printf("Syntax error in Line [%d]. Expecting an IDENTIFIER, INTEGER or DOUBLE but found [%s]\n", yylineno, yytext);
 		SkipAllTokensInLine();
 		return;
@@ -615,7 +673,9 @@ void ADDITION_handler(int token)
 
 void SUBTRACTION_handler(int token)
 {
-	// Get the next token and make sure it is an IDENTIFIER.
+	// Retrieve the next token from the input via yylex().
+	// If the token is not an IDENTIFIER, display an error message
+	// and skip all remaining tokens in the line.
 	token = yylex();
 	if (token != IDENTIFIER)
 	{
@@ -624,9 +684,12 @@ void SUBTRACTION_handler(int token)
 		return;
 	}
 
-	// Get the NameValue associated with IDENTIFIER.
+	// Get the NameValue associated with IDENTIFIER (id1).
 	std::vector<NameValue>::iterator theIterator = GetNameValue(std::string(yytext));
 
+	// If the relevant NameValue cannot be found,
+	// display an error message and skip the rest of the
+	// line.
 	if (theIterator == vecNVPairs.end())
 	{
 		printf("Identifier [%s] Not Found.\n", yytext);
@@ -641,7 +704,8 @@ void SUBTRACTION_handler(int token)
 	// Set nameValue to the discovered NameValue pair found in vecNVPairs.
 	NameValue nameValue = (*theIterator);
 
-	// Get the next token and make sure it is a COMMA.
+	// Check the next token. It must be the COMMA token.
+	// If not, an error message is displayed and the rest of the line is skipped.
 	token = yylex();
 	if (token != COMMA)
 	{
@@ -650,13 +714,19 @@ void SUBTRACTION_handler(int token)
 		return;
 	}
 
-	// Get the next token and make sure it is either an IDENTIFIER, a literal INTEGER value, or a literal DOUBLE value.
+	// Get the next token and make sure it is either an IDENTIFIER, a literal INTEGER value, 
+	// or a literal DOUBLE value.
 	token = yylex();
+
 	if (token == IDENTIFIER)
 	{
-		// Get the NameValue associated with the next IDENTIFIER.
+		// If the next token is an IDENTIFIER (id2), GetNameValue() is called to 
+		// obtain the value of the variable associated with the name of id2.
 		std::vector<NameValue>::iterator theIterator = GetNameValue(std::string(yytext));
 
+		// If the relevant NameValue cannot be found,
+		// display an error message and skip the rest of the
+		// line.
 		if (theIterator == vecNVPairs.end())
 		{
 			printf("Identifier [%s] Not Found.\n", yytext);
@@ -665,6 +735,8 @@ void SUBTRACTION_handler(int token)
 		}
 		else
 		{
+			// If id2 and id1 have incompatible types, we cannot perform SUBTRACTION.
+			// We display an error message and skip the rest of the line.
 			if (nameValue.token_value.tvalType != (*theIterator).token_value.tvalType)
 			{
 				printf("Identifier [%s] and Identifier [%s] have incompatible tvalTypes. Cannot perform SUBTRACTION.\n", nameValue.strName.c_str(), (*theIterator).strName.c_str());
@@ -681,6 +753,10 @@ void SUBTRACTION_handler(int token)
 	}
 	else if (token == INTEGER)
 	{
+		// If the next token is an INTEGER but id1 is not of type INTEGER,
+		// we cannot perform SUBTRACTION.
+		//
+		// We display an error message and skip the rest of the line.
 		if (nameValue.token_value.tvalType != INTEGER)
 		{
 			printf("Identifier [%s] is of type DOUBLE and cannot perform SUBTRACTION on an INTEGER.\n", nameValue.strName.c_str());
@@ -694,6 +770,10 @@ void SUBTRACTION_handler(int token)
 	}
 	else if (token == DOUBLE)
 	{
+		// If the next token is a DOUBLE but id1 is not of type DOUBLE,
+		// we cannot perform SUBTRACTION.
+		//
+		// We display an error message and skip the rest of the line.
 		if (nameValue.token_value.tvalType != DOUBLE)
 		{
 			printf("Identifier [%s] is of type INTEGER and cannot perform SUBTRACTION on an DOUBLE.\n", nameValue.strName.c_str());
@@ -707,6 +787,8 @@ void SUBTRACTION_handler(int token)
 	}
 	else
 	{
+		// If the next token is not an IDENTIFIER, INTEGER, or DOUBLE,
+		// display an error message and skip the rest of the line.
 		printf("Syntax error in Line [%d]. Expecting an IDENTIFIER, INTEGER or DOUBLE but found [%s]\n", yylineno, yytext);
 		SkipAllTokensInLine();
 		return;
@@ -717,7 +799,9 @@ void SUBTRACTION_handler(int token)
 
 void MULTIPLICATION_handler(int token)
 {
-	// Get the next token and make sure it is an IDENTIFIER.
+	// Retrieve the next token from the input via yylex().
+	// If the token is not an IDENTIFIER, display an error message
+	// and skip all remaining tokens in the line.
 	token = yylex();
 	if (token != IDENTIFIER)
 	{
@@ -726,9 +810,12 @@ void MULTIPLICATION_handler(int token)
 		return;
 	}
 
-	// Get the NameValue associated with IDENTIFIER.
+	// Get the NameValue associated with IDENTIFIER (id1).
 	std::vector<NameValue>::iterator theIterator = GetNameValue(std::string(yytext));
 
+	// If the relevant NameValue cannot be found,
+	// display an error message and skip the rest of the
+	// line.
 	if (theIterator == vecNVPairs.end())
 	{
 		printf("Identifier [%s] Not Found.\n", yytext);
@@ -743,7 +830,8 @@ void MULTIPLICATION_handler(int token)
 	// Set nameValue to the discovered NameValue pair found in vecNVPairs.
 	NameValue nameValue = (*theIterator);
 
-	// Get the next token and make sure it is a COMMA.
+	// Check the next token. It must be the COMMA token.
+	// If not, an error message is displayed and the rest of the line is skipped.
 	token = yylex();
 	if (token != COMMA)
 	{
@@ -752,13 +840,18 @@ void MULTIPLICATION_handler(int token)
 		return;
 	}
 
-	// Get the next token and make sure it is either an IDENTIFIER, a literal INTEGER value, or a literal DOUBLE value.
+	// Get the next token and make sure it is either an IDENTIFIER, a literal INTEGER value, 
+	// or a literal DOUBLE value.
 	token = yylex();
 	if (token == IDENTIFIER)
 	{
-		// Get the NameValue associated with the next IDENTIFIER.
+		// If the next token is an IDENTIFIER (id2), GetNameValue() is called to 
+		// obtain the value of the variable associated with the name of id2.
 		std::vector<NameValue>::iterator theIterator = GetNameValue(std::string(yytext));
 
+		// If the relevant NameValue cannot be found,
+		// display an error message and skip the rest of the
+		// line.
 		if (theIterator == vecNVPairs.end())
 		{
 			printf("Identifier [%s] Not Found.\n", yytext);
@@ -767,6 +860,8 @@ void MULTIPLICATION_handler(int token)
 		}
 		else
 		{
+			// If id2 and id1 have incompatible types, we cannot perform MULTIPLICATION.
+			// We display an error message and skip the rest of the line.
 			if (nameValue.token_value.tvalType != (*theIterator).token_value.tvalType)
 			{
 				printf("Identifier [%s] and Identifier [%s] have incompatible tvalTypes. Cannot perform MULTIPLICATION.\n", nameValue.strName.c_str(), (*theIterator).strName.c_str());
@@ -783,6 +878,10 @@ void MULTIPLICATION_handler(int token)
 	}
 	else if (token == INTEGER)
 	{
+		// If the next token is an INTEGER but id1 is not of type INTEGER,
+		// we cannot perform MULTIPLICATION.
+		//
+		// We display an error message and skip the rest of the line.
 		if (nameValue.token_value.tvalType != INTEGER)
 		{
 			printf("Identifier [%s] is of type DOUBLE and cannot perform MULTIPLICATION on an INTEGER.\n", nameValue.strName.c_str());
@@ -796,6 +895,10 @@ void MULTIPLICATION_handler(int token)
 	}
 	else if (token == DOUBLE)
 	{
+		// If the next token is a DOUBLE but id1 is not of type DOUBLE,
+		// we cannot perform MULTIPLICATION.
+		//
+		// We display an error message and skip the rest of the line.
 		if (nameValue.token_value.tvalType != DOUBLE)
 		{
 			printf("Identifier [%s] is of type INTEGER and cannot perform MULTIPLICATION on an DOUBLE.\n", nameValue.strName.c_str());
@@ -809,6 +912,8 @@ void MULTIPLICATION_handler(int token)
 	}
 	else
 	{
+		// If the next token is not an IDENTIFIER, INTEGER, or DOUBLE,
+		// display an error message and skip the rest of the line.
 		printf("Syntax error in Line [%d]. Expecting an IDENTIFIER, INTEGER or DOUBLE but found [%s]\n", yylineno, yytext);
 		SkipAllTokensInLine();
 		return;
@@ -819,7 +924,9 @@ void MULTIPLICATION_handler(int token)
 
 void DIVISION_handler(int token)
 {
-	// Get the next token and make sure it is an IDENTIFIER.
+	// Retrieve the next token from the input via yylex().
+	// If the token is not an IDENTIFIER, display an error message
+	// and skip all remaining tokens in the line.
 	token = yylex();
 	if (token != IDENTIFIER)
 	{
@@ -828,9 +935,12 @@ void DIVISION_handler(int token)
 		return;
 	}
 
-	// Get the NameValue associated with IDENTIFIER.
+	// Get the NameValue associated with IDENTIFIER (id1).
 	std::vector<NameValue>::iterator theIterator = GetNameValue(std::string(yytext));
 
+	// If the relevant NameValue cannot be found,
+	// display an error message and skip the rest of the
+	// line.
 	if (theIterator == vecNVPairs.end())
 	{
 		printf("Identifier [%s] Not Found.\n", yytext);
@@ -839,7 +949,8 @@ void DIVISION_handler(int token)
 	}
 	else
 	{
-		// Check if the IDENTIFIER has a value of 0. If so, we cannot perform DIVISION.
+		// Check if id1 has a value of 0. If so, we cannot perform DIVISION.
+		// We display an error message and skip the rest of the line.
 		if (
 			((*theIterator).token_value.tvalType == INTEGER) && ((*theIterator).token_value.tval.intval == 0)
 												||
@@ -857,7 +968,8 @@ void DIVISION_handler(int token)
 	// Set nameValue to the discovered NameValue pair found in vecNVPairs.
 	NameValue nameValue = (*theIterator);
 
-	// Get the next token and make sure it is a COMMA.
+	// Check the next token. It must be the COMMA token.
+	// If not, an error message is displayed and the rest of the line is skipped.
 	token = yylex();
 	if (token != COMMA)
 	{
@@ -866,13 +978,18 @@ void DIVISION_handler(int token)
 		return;
 	}
 
-	// Get the next token and make sure it is either an IDENTIFIER, a literal INTEGER value, or a literal DOUBLE value.
+	// Get the next token and make sure it is either an IDENTIFIER, a literal INTEGER value, 
+	// or a literal DOUBLE value.
 	token = yylex();
 	if (token == IDENTIFIER)
 	{
-		// Get the NameValue associated with the next IDENTIFIER.
+		// If the next token is an IDENTIFIER (id2), GetNameValue() is called to 
+		// obtain the value of the variable associated with the name of id2.
 		std::vector<NameValue>::iterator theIterator = GetNameValue(std::string(yytext));
 
+		// If the relevant NameValue cannot be found,
+		// display an error message and skip the rest of the
+		// line.
 		if (theIterator == vecNVPairs.end())
 		{
 			printf("Identifier [%s] Not Found.\n", yytext);
@@ -881,6 +998,8 @@ void DIVISION_handler(int token)
 		}
 		else
 		{
+			// If id2 and id1 have incompatible types, we cannot perform DIVISION.
+			// We display an error message and skip the rest of the line.
 			if (nameValue.token_value.tvalType != (*theIterator).token_value.tvalType)
 			{
 				printf("Identifier [%s] and Identifier [%s] have incompatible tvalTypes. Cannot perform DIVISION.\n", nameValue.strName.c_str(), (*theIterator).strName.c_str());
@@ -890,7 +1009,8 @@ void DIVISION_handler(int token)
 
 			(*theIterator).displayValue();
 
-			// Check if the IDENTIFIER has a value of 0. If so, we cannot perform DIVISION.
+			// Check if id2 has a value of 0. If so, we cannot perform DIVISION.
+			// We display an error message and skip the rest of the line.
 			if (
 				((*theIterator).token_value.tvalType == INTEGER) && ((*theIterator).token_value.tval.intval == 0)
 													||
@@ -909,10 +1029,22 @@ void DIVISION_handler(int token)
 	}
 	else if (token == INTEGER)
 	{
-		// Check if divisor is 0
+		// Check if divisor has a value of 0. If so, we cannot perform DIVISION.
+		// We display an error message and skip the rest of the line.
 		if (g_token_value.tval.intval == 0)
 		{
 			printf("Divisor is 0. Cannot perform DIVISION.\n");
+			SkipAllTokensInLine();
+			return;
+		}
+
+		// If the next token is an INTEGER but id1 is not of type INTEGER,
+		// we cannot perform DIVISION.
+		//
+		// We display an error message and skip the rest of the line.
+		if (nameValue.token_value.tvalType != INTEGER)
+		{
+			printf("Identifier [%s] is of type DOUBLE and cannot perform DIVISION on an INTEGER.\n", nameValue.strName.c_str());
 			SkipAllTokensInLine();
 			return;
 		}
@@ -923,10 +1055,22 @@ void DIVISION_handler(int token)
 	}
 	else if (token == DOUBLE)
 	{
-		// Check if divisor is 0
+		// Check if divisor has a value of 0.0. If so, we cannot perform DIVISION.
+		// We display an error message and skip the rest of the line.
 		if (g_token_value.tval.dblval == 0.0)
 		{
 			printf("Divisor is 0. Cannot perform DIVISION.\n");
+			SkipAllTokensInLine();
+			return;
+		}
+
+		// If the next token is a DOUBLE but id1 is not of type DOUBLE,
+		// we cannot perform DIVISION.
+		//
+		// We display an error message and skip the rest of the line.
+		if (nameValue.token_value.tvalType != DOUBLE)
+		{
+			printf("Identifier [%s] is of type INTEGER and cannot perform DIVISION on an DOUBLE.\n", nameValue.strName.c_str());
 			SkipAllTokensInLine();
 			return;
 		}
@@ -937,6 +1081,8 @@ void DIVISION_handler(int token)
 	}
 	else
 	{
+		// If the next token is not an IDENTIFIER, INTEGER, or DOUBLE,
+		// display an error message and skip the rest of the line.
 		printf("Syntax error in Line [%d]. Expecting an IDENTIFIER, INTEGER or DOUBLE but found [%s]\n", yylineno, yytext);
 		SkipAllTokensInLine();
 		return;
@@ -947,6 +1093,9 @@ void DIVISION_handler(int token)
 
 void CONCATENATION_handler(int token)
 {
+	// Retrieve the next token from the input via yylex().
+	// If the token is not an IDENTIFIER, display an error message
+	// and skip all remaining tokens in the line.
 	NameValue nameValue;
 
 	token = yylex();
@@ -957,9 +1106,12 @@ void CONCATENATION_handler(int token)
 		return;
 	}
 
-	// Get the NameValue associated with IDENTIFIER.
+	// Get the NameValue associated with IDENTIFIER (id1).
 	std::vector<NameValue>::iterator theIterator = GetNameValue(std::string(yytext));
 
+	// If the relevant NameValue cannot be found,
+	// display an error message and skip the rest of the
+	// line.
 	if (theIterator == vecNVPairs.end())
 	{
 		printf("Identifier [%s] Not Found.\n", yytext);
@@ -968,6 +1120,11 @@ void CONCATENATION_handler(int token)
 	}
 	else if ((*theIterator).token_value.tvalType != STRING)
 	{
+		// If id1 is not of type STRING, we cannot
+		// perform CONCATENATION.
+		//
+		// We display an error message and skip the rest of the
+		// line.
 		printf("Identifier [%s] is not a STRING, cannot perform CONCATENATION.\n", yytext);
 		SkipAllTokensInLine();
 		return;
@@ -977,8 +1134,11 @@ void CONCATENATION_handler(int token)
 		(*theIterator).displayValue();
 	}
 
+	// Set nameValue to the discovered NameValue pair found in vecNVPairs.
 	nameValue = (*theIterator);
 
+	// Check the next token. It must be the COMMA token.
+	// If not, an error message is displayed and the rest of the line is skipped.
 	token = yylex();
 	if (token != COMMA)
 	{
@@ -987,12 +1147,17 @@ void CONCATENATION_handler(int token)
 		return;
 	}
 
+	// Get the next token and make sure it is either an IDENTIFIER or a literal STRING value.
 	token = yylex();
 	if (token == IDENTIFIER)
 	{
-		// Get the NameValue associated with the next IDENTIFIER.
+		// If the next token is an IDENTIFIER (id2), GetNameValue() is called to 
+		// obtain the value of the variable associated with the name of id2.
 		std::vector<NameValue>::iterator theIterator = GetNameValue(std::string(yytext));
 
+		// If the relevant NameValue cannot be found,
+		// display an error message and skip the rest of the
+		// line.
 		if (theIterator == vecNVPairs.end())
 		{
 			printf("Identifier [%s] Not Found.\n", yytext);
@@ -1001,6 +1166,11 @@ void CONCATENATION_handler(int token)
 		}
 		else if ((*theIterator).token_value.tvalType != STRING)
 		{
+			// If id2 is not of type STRING, we cannot
+			// perform CONCATENATION.
+			//
+			// We display an error message and skip the rest of the
+			// line.
 			printf("Identifier [%s] is not a STRING, cannot perform CONCATENATION.\n", yytext);
 			SkipAllTokensInLine();
 			return;
@@ -1023,6 +1193,8 @@ void CONCATENATION_handler(int token)
 	}
 	else
 	{
+		// If the next token is not an IDENTIFIER or STRING, display an error message 
+		// and skip the rest of the line.
 		printf("Syntax error in Line [%d]. Expecting an IDENTIFIER or STRING but found [%s]\n", yylineno, yytext);
 		SkipAllTokensInLine();
 		return;

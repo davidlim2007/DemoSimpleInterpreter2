@@ -1,16 +1,22 @@
-## Set the variable 'a' to value 100
-SET a = 100
+// Set the variable 'a' to value "Hello "
+SET a = "Hello "
 
-// Set the variable 'b' to value 200
-SET b = 200
+// Set the variable 'b' to value "World"
+SET b = "World"
 
-## Set the variable 'c' to the value in 'a'.
-SET c = a
+// Concatenate 'b' to 'a'
+CONCAT a, b
 
-// Add value 300 to 'c'.
-ADD c, 300
+// Set the variable 'c' to value 100
+SET c = 100
 
-## Print out values of 'a', 'b', 'c'.
+// Multiply 'c' by value 10.
+MUL c, 10
+
+// Divide 'c' by value 50.
+DIV c, 50
+
+// Print out values of 'a', 'b', 'c'.
 GET a
 GET b
 GET c

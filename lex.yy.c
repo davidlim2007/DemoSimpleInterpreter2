@@ -438,7 +438,6 @@ char *yytext;
 
 #define isatty	_isatty
 #define fileno	_fileno
-/* union tval_union	tval; */
 
 void FreeGlobalStringLitBuffer();
 void InitGlobalStringLitBuffer();
@@ -451,7 +450,7 @@ struct token_value_struct	g_token_value;
 
 #define STRING_LIT 1
 
-#line 455 "lex.yy.c"
+#line 454 "lex.yy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -602,10 +601,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 30 "lex_specs.l"
+#line 29 "lex_specs.l"
 
 
-#line 609 "lex.yy.c"
+#line 608 "lex.yy.c"
 
 	if ( yy_init )
 		{
@@ -698,62 +697,62 @@ do_action:	/* This label is used only to access EOF actions. */
 	{ /* beginning of action switch */
 case 1:
 YY_RULE_SETUP
-#line 32 "lex_specs.l"
+#line 31 "lex_specs.l"
 return SET;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 33 "lex_specs.l"
+#line 32 "lex_specs.l"
 return GET;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 34 "lex_specs.l"
+#line 33 "lex_specs.l"
 return ASSIGN;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 35 "lex_specs.l"
+#line 34 "lex_specs.l"
 return ADDITION;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 36 "lex_specs.l"
+#line 35 "lex_specs.l"
 return SUBTRACTION;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 37 "lex_specs.l"
+#line 36 "lex_specs.l"
 return MULTIPLICATION;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 38 "lex_specs.l"
+#line 37 "lex_specs.l"
 return DIVISION;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 39 "lex_specs.l"
+#line 38 "lex_specs.l"
 return CONCATENATION;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 40 "lex_specs.l"
+#line 39 "lex_specs.l"
 return EXIT;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 41 "lex_specs.l"
+#line 40 "lex_specs.l"
 return COMMA;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 42 "lex_specs.l"
+#line 41 "lex_specs.l"
 return IDENTIFIER;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 43 "lex_specs.l"
+#line 42 "lex_specs.l"
 {
 								g_token_value.tvalType = INTEGER;
 								g_token_value.tval.intval = atoi(yytext);
@@ -762,7 +761,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 49 "lex_specs.l"
+#line 48 "lex_specs.l"
 {
 								g_token_value.tvalType = DOUBLE;
 								g_token_value.tval.dblval = atof(yytext);
@@ -771,7 +770,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 55 "lex_specs.l"
+#line 54 "lex_specs.l"
 {
 								/*
 									This rule is for processing white spaces 
@@ -791,12 +790,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 72 "lex_specs.l"
+#line 71 "lex_specs.l"
 return NEWLINE;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 74 "lex_specs.l"
+#line 73 "lex_specs.l"
 { 
 								/* 
 								Single Line Comment Processing.
@@ -809,7 +808,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 84 "lex_specs.l"
+#line 83 "lex_specs.l"
 { 
 								/*
 								Another Single Line Comment Processing.
@@ -822,7 +821,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 94 "lex_specs.l"
+#line 93 "lex_specs.l"
 { 
 								/* 
 									<STRING_LIT> Rule 1. 
@@ -877,7 +876,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 146 "lex_specs.l"
+#line 145 "lex_specs.l"
 { 
 								/* 
 									<STRING_LIT> Rule 2. 
@@ -902,7 +901,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 168 "lex_specs.l"
+#line 167 "lex_specs.l"
 {
 									/* 
 										<STRING_LIT> Rule 3. 
@@ -919,7 +918,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 182 "lex_specs.l"
+#line 181 "lex_specs.l"
 { 
 									/* 
 										<STRING_LIT> Rule 4.
@@ -938,7 +937,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 198 "lex_specs.l"
+#line 197 "lex_specs.l"
 { 
 									/* 
 										<STRING_LIT> Rule 5. 
@@ -954,7 +953,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 211 "lex_specs.l"
+#line 210 "lex_specs.l"
 { 
 									/* 
 										<STRING_LIT> Rule 6. 
@@ -968,7 +967,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 222 "lex_specs.l"
+#line 221 "lex_specs.l"
 { 
 									/* 
 										<STRING_LIT> Rule 7. 
@@ -982,7 +981,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 233 "lex_specs.l"
+#line 232 "lex_specs.l"
 { 
 									/* 
 										<STRING_LIT> Rule 8. 
@@ -996,7 +995,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 244 "lex_specs.l"
+#line 243 "lex_specs.l"
 {
 									/* 
 										<STRING_LIT> Rule 9. 
@@ -1014,7 +1013,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 259 "lex_specs.l"
+#line 258 "lex_specs.l"
 {
 									/* 
 										<STRING_LIT> Rule 10. 
@@ -1031,7 +1030,7 @@ YY_RULE_SETUP
 /* Must always be the last rule. */
 case 28:
 YY_RULE_SETUP
-#line 274 "lex_specs.l"
+#line 273 "lex_specs.l"
 { 
 								printf("Unexpected Text [%s].\n", yytext); 
 								return SYNTAX_ERROR;
@@ -1039,10 +1038,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 279 "lex_specs.l"
+#line 278 "lex_specs.l"
 ECHO;
 	YY_BREAK
-#line 1046 "lex.yy.c"
+#line 1045 "lex.yy.c"
 			case YY_STATE_EOF(INITIAL):
 			case YY_STATE_EOF(STRING_LIT):
 				yyterminate();
@@ -1927,7 +1926,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 279 "lex_specs.l"
+#line 278 "lex_specs.l"
 
 
 int yywrap(void)

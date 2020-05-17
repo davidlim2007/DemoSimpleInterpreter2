@@ -8,7 +8,6 @@
 
 #define isatty	_isatty
 #define fileno	_fileno
-/* union tval_union	tval; */
 
 void FreeGlobalStringLitBuffer();
 void InitGlobalStringLitBuffer();
